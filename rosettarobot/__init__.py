@@ -16,6 +16,7 @@ Options:
   -v --verbose      Be very, very unquiet.
 """
 
+
 class Code_Entry(object):
     def __init__(self, path):
         "Create a code entry."
@@ -41,8 +42,15 @@ class Rosetta_Entry(object):
         "Login to RosettaCode.org and obtain login context."
         return "CONTEXT"
 
-def main():
-    pass
 
-if __name__=='__main__':
+def main():
+    try:
+        arguments = docopt.docopt(__doc__)
+        source_files = arguments['src_file']
+
+    except docopt.DocoptExit as e:
+        print(e.message)
+
+
+if __name__ == '__main__':
     main()
