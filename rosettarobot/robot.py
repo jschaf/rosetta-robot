@@ -33,7 +33,7 @@ class Code_Entry(object):
         for line in open(self.path, "r"):
             matches = self._extract_url_string(line)
             if matches:
-                return match.group(1)
+                return matches.group(1)
 
 
     def _extract_url_string(self, string):
