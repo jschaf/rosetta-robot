@@ -66,6 +66,10 @@ def main():
         elif arguments['markup']:
             print("marking up")
         elif arguments['check']:
+            for src in source_files:
+                code = Code_Entry(src)
+                print("{}: {}".format(src, code.extract_url()))
+
             print("checking")
 
     except docopt.DocoptExit as e:
