@@ -1,7 +1,8 @@
 import glob
+import logging
+from rosettarobot import robot
 
 def test_extract_url_string():
-    import rosettarobot.robot as robot
     code = robot.Code_Entry("fake_path")
 
     tests_failed = [
@@ -251,7 +252,11 @@ def test_extract_url_string():
 
 
 def test_extract_url():
-    for path in glob.glob("github-rust-rosetta/src/*.rs"):
-        code = Code_Entry(path)
+    for path in glob.glob("rosettarobot/test/github-rust-rosetta/src/*.rs"):
+        code = robot.Code_Entry(path)
         url = code.extract_url()
-        assert(url is not None)
+        if url is None:
+            logging.debug("Failed to extract url from {}".format(path))
+            assert(False)
+        else:
+            assert(url.startswith('http://rosettacode.org/wiki'))
