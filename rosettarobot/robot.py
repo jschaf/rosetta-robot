@@ -37,7 +37,7 @@ class Code_Entry(object):
 
 
     def _extract_url_string(self, string):
-        return self.url_pattern.search(string)
+        return self.url_regexp.search(string)
 
 
     def make_wiki_markup(self):

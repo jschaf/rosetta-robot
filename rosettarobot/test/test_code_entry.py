@@ -1,3 +1,5 @@
+import glob
+
 def test_extract_url_string():
     import rosettarobot.robot as robot
     code = robot.Code_Entry("fake_path")
@@ -246,3 +248,10 @@ def test_extract_url_string():
 
     for input,expected in tests_passed:
         assert(code._extract_url_string(input).group(1) == expected)
+
+
+def test_extract_url():
+    for path in glob.glob("github-rust-rosetta/src/*.rs"):
+        code = Code_Entry(path)
+        url = code.extract_url()
+        assert(url is not None)
