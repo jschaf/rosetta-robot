@@ -25,11 +25,16 @@ class Code_Entry(object):
         "Create a code entry."
         self.path = path
 
-        self.url_pattern = re.compile(r"//.*?(http://rosettacode\.org/wiki/[^\s]+)")
+        self.url_pattern = "//.*?(http://rosettacode\.org/wiki/[^\s]+)"
+        self.url_regexp = re.compile(self.url_pattern)
+
 
     def extract_url(self):
         for line in open(self.path, "r"):
             matches = self._extract_url_string(line)
+            if matches:
+                return match.group(1)
+
 
     def _extract_url_string(self, string):
         return self.url_pattern.search(string)
