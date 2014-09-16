@@ -1,0 +1,8 @@
+language: rust
+
+script: |
+  if [[ $TRAVIS_PULL_REQUEST != 'false' ]]; then
+    make changed;
+  else
+    make all;
+  fi
