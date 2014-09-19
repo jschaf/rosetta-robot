@@ -3,7 +3,7 @@ import logging
 from rosettarobot import robot
 
 def test_extract_url_string():
-    code = robot.Code_Entry("fake_path")
+    code = robot.Code_Entry("rosettarobot/test/github-rust-rosetta/src/24_game.rs")
 
     tests_failed = [
         "",

@@ -24,13 +24,15 @@ class Code_Entry(object):
     def __init__(self, path):
         "Create a code entry."
         self.path = path
-
+        self.code = None
+        with open(self.path, "r") as f:
+            self.code = f.read()
         self.url_pattern = "//.*?(http://rosettacode\.org/wiki/[^\s]+)"
         self.url_regexp = re.compile(self.url_pattern)
 
 
     def extract_url(self):
-        for line in open(self.path, "r"):
+        for line in self.code.splitlines():
             matches = self._extract_url_string(line)
             if matches:
                 return matches.group(1)
