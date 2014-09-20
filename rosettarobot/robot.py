@@ -24,18 +24,20 @@ import re
 import subprocess
 import tempfile
 
-class Code_Entry(object):
+class CodeEntry(object):
+    """Code information."""
     def __init__(self, path):
         "Create a code entry."
         self.path = path
         self.code = None
-        with open(self.path, "r") as f:
-            self.code = f.read()
-        self.url_pattern = "//.*?(http://rosettacode\.org/wiki/[^\s]+)"
+        with open(self.path, "r") as code_file:
+            self.code = code_file.read()
+        self.url_pattern = r"//.*?(http://rosettacode.org/wiki/[^\s]+)"
         self.url_regexp = re.compile(self.url_pattern)
 
 
     def extract_url(self):
+        """Return the rosetta code url from the code."""
         for line in self.code.splitlines():
             matches = self._extract_url_string(line)
             if matches:
@@ -43,10 +45,12 @@ class Code_Entry(object):
 
 
     def _extract_url_string(self, string):
+        """Return the rosetta code url from one line of code."""
         return self.url_regexp.search(string)
 
 
     def generate_json_doc(self):
+        """Return the rustdoc json for the CodeEntry."""
         json_str = ""
         with tempfile.NamedTemporaryFile() as temp:
             subprocess.call(["rustdoc", "-o", temp.name,
@@ -56,6 +60,7 @@ class Code_Entry(object):
 
     @staticmethod
     def _extract_docs(json_doc):
+        """Extract module documentation for the CodeEntry."""
         json_str = json.loads(json_doc)
         jsonpath_expr = jsonpath.parse("$..module.attrs")
         matches = [match.value for match in jsonpath_expr.find(json_str)]
@@ -63,20 +68,22 @@ class Code_Entry(object):
             matches = matches[0]
 
             module_docs = []
-            for m in matches:
-                if 'fields' in m and m['fields'][0] == 'doc':
-                      module_docs.append(m['fields'][1])
+            for match in matches:
+                if 'fields' in match and match['fields'][0] == 'doc':
+                    module_docs.append(match['fields'][1])
             return module_docs
         else:
             return []
 
     def make_wiki_markup(self):
+        """Return a string of wiki markup for RosettaCode.org."""
         json_doc = self.generate_json_doc()
-        raw_docs = Code_Entry._extract_docs(json_doc)
+        raw_docs = CodeEntry._extract_docs(json_doc)
         return "\n".join(raw_docs)
 
 
-class Rosetta_Entry(object):
+class RosettaEntry(object):
+    """Hold information to post to RosettaCode.org."""
     def __init__(self, username, password):
         "Create a RosettaCode object."
         self.username = username
@@ -85,10 +92,17 @@ class Rosetta_Entry(object):
 
     def authenticate(self):
         "Login to RosettaCode.org and obtain login context."
-        return "CONTEXT"
+        pass
+
+
+    def post_code(self, code_entry):
+        """Post code_entry to RosettaCode.org."""
+        pass
+
 
 
 def main():
+    """The entrypoint and command line interface for Rosetta Robot."""
     try:
         arguments = docopt.docopt(__doc__, version='Rosetta Robot 0.1')
         source_files = arguments['<src_file>']
@@ -97,18 +111,18 @@ def main():
             print("Uploading")
         elif arguments['markup']:
             for src in source_files:
-                code = Code_Entry(src)
+                code = CodeEntry(src)
                 print("\n*** {}\n{}".format(src, code.make_wiki_markup()))
 
         elif arguments['check']:
             for src in source_files:
-                code = Code_Entry(src)
+                code = CodeEntry(src)
                 print("{}: {}".format(src, code.extract_url()))
 
             print("checking")
 
-    except docopt.DocoptExit as e:
-        print(e)
+    except docopt.DocoptExit:
+        print(docopt.DocoptExit)
 
 
 if __name__ == '__main__':
