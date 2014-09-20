@@ -18,7 +18,11 @@ Options:
 
 
 import docopt
+import json
+import jsonpath_rw as jsonpath
 import re
+import subprocess
+import tempfile
 
 class Code_Entry(object):
     def __init__(self, path):
@@ -42,8 +46,33 @@ class Code_Entry(object):
         return self.url_regexp.search(string)
 
 
+    def generate_json_doc(self):
+        json_str = ""
+        with tempfile.NamedTemporaryFile() as temp:
+            subprocess.call(["rustdoc", "-o", temp.name, "--output-format", "json", self.path])
+            json_str = temp.read().decode("utf-8")
+        return json_str
+
+    @staticmethod
+    def _extract_docs(json_doc):
+        json_str = json.loads(json_doc)
+        jsonpath_expr = jsonpath.parse("$..module.attrs")
+        matches = [match.value for match in jsonpath_expr.find(json_str)]
+        if matches:
+            matches = matches[0]
+
+            module_docs = []
+            for m in matches:
+                if 'fields' in m and m['fields'][0] == 'doc':
+                      module_docs.append(m['fields'][1])
+            return module_docs
+        else:
+            return []
+
     def make_wiki_markup(self):
-        return "wiki markup"
+        json_doc = self.generate_json_doc()
+        raw_docs = Code_Entry._extract_docs(json_doc)
+        return "\n".join(raw_docs)
 
 
 class Rosetta_Entry(object):
@@ -66,7 +95,10 @@ def main():
         if arguments['upload']:
             print("Uploading")
         elif arguments['markup']:
-            print("marking up")
+            for src in source_files:
+                code = Code_Entry(src)
+                print("\n*** {}\n{}".format(src, code.make_wiki_markup()))
+
         elif arguments['check']:
             for src in source_files:
                 code = Code_Entry(src)
