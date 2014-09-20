@@ -24,6 +24,7 @@ import re
 import subprocess
 import tempfile
 
+
 class CodeEntry(object):
     """Code information."""
     def __init__(self, path):
@@ -35,7 +36,6 @@ class CodeEntry(object):
         self.url_pattern = r"//.*?(http://rosettacode.org/wiki/[^\s]+)"
         self.url_regexp = re.compile(self.url_pattern)
 
-
     def extract_url(self):
         """Return the rosetta code url from the code."""
         for line in self.code.splitlines():
@@ -43,11 +43,9 @@ class CodeEntry(object):
             if matches:
                 return matches.group(1)
 
-
     def _extract_url_string(self, string):
         """Return the rosetta code url from one line of code."""
         return self.url_regexp.search(string)
-
 
     def generate_json_doc(self):
         """Return the rustdoc json for the CodeEntry."""
@@ -89,16 +87,13 @@ class RosettaEntry(object):
         self.username = username
         self.password = password
 
-
     def authenticate(self):
         "Login to RosettaCode.org and obtain login context."
         pass
 
-
     def post_code(self, code_entry):
         """Post code_entry to RosettaCode.org."""
         pass
-
 
 
 def main():

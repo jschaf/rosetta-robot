@@ -2,6 +2,7 @@ import glob
 import logging
 from rosettarobot import robot
 
+
 def test_extract_url_string():
     code = robot.CodeEntry("rosettarobot/test/github-rust-rosetta/src/24_game.rs")
 
