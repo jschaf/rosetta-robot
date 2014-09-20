@@ -49,7 +49,8 @@ class Code_Entry(object):
     def generate_json_doc(self):
         json_str = ""
         with tempfile.NamedTemporaryFile() as temp:
-            subprocess.call(["rustdoc", "-o", temp.name, "--output-format", "json", self.path])
+            subprocess.call(["rustdoc", "-o", temp.name,
+                             "--output-format", "json", self.path])
             json_str = temp.read().decode("utf-8")
         return json_str
 
