@@ -18,6 +18,7 @@ Options:
 
 
 import docopt
+import jinja2
 import json
 import jsonpath_rw as jsonpath
 import re
@@ -75,9 +76,26 @@ class CodeEntry(object):
 
     def make_wiki_markup(self):
         """Return a string of wiki markup for RosettaCode.org."""
+
         json_doc = self.generate_json_doc()
         raw_docs = CodeEntry._extract_docs(json_doc)
-        return "\n".join(raw_docs)
+        docs = "\n".join(raw_docs)
+
+        jinja_env = jinja2.Environment(
+            loader=jinja2.PackageLoader('rosettarobot', 'templates'),
+            block_start_string='<%',
+            block_end_string='%>',
+            variable_start_string='%%',
+            variable_end_string='%%',
+            comment_start_string='<#',
+            comment_end_string='#>',
+        )
+
+        template = jinja_env.get_template("mediawiki_template.jinja2")
+        return template.render(header=None,
+                               documentation=docs,
+                               code=self.code,
+                               output=None)
 
 
 class RosettaEntry(object):
