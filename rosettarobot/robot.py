@@ -5,7 +5,7 @@ Upload source files to RosettaCode.org
 
 Usage:
   rosettarobot upload <src_file>...
-  rosettarobot markup <src_file>...
+  rosettarobot markup [--github|--mediawiki] <src_file>...
   rosettarobot check [--out-file=<rosetta-check.txt>] <src_file>...
 
 Options:
@@ -97,6 +97,21 @@ class CodeEntry(object):
                                code=self.code,
                                output=None)
 
+    def make_github_markup(self):
+        json_doc = self.generate_json_doc()
+        raw_docs = CodeEntry._extract_docs(json_doc)
+        docs = "\n".join(raw_docs)
+
+        jinja_env = jinja2.Environment(
+            loader=jinja2.PackageLoader('rosettarobot', 'templates'),
+        )
+
+        template = jinja_env.get_template("github_template.jinja2")
+        return template.render(header=None,
+                               documentation=docs,
+                               code=self.code,
+                               output=None)
+
 
 class RosettaEntry(object):
     """Hold information to post to RosettaCode.org."""
@@ -123,9 +138,21 @@ def main():
         if arguments['upload']:
             print("Uploading")
         elif arguments['markup']:
+            markup_fn = CodeEntry.make_wiki_markup
+
+            if arguments['--github']:
+                print("Using github flavored markdown syntax.")
+                markup_fn = CodeEntry.make_github_markup
+
+            elif arguments['--mediawiki']:
+                print("Using mediawiki syntax.")
+
+            else:
+                print("No syntax declared, using mediawiki syntax.")
+
             for src in source_files:
                 code = CodeEntry(src)
-                print("\n*** {}\n{}".format(src, code.make_wiki_markup()))
+                print("\n*** {}\n{}".format(src, markup_fn(code)))
 
         elif arguments['check']:
             for src in source_files:
