@@ -25,6 +25,12 @@ import re
 import subprocess
 import tempfile
 
+import requests
+import lxml.html
+import urllib
+
+ROSETTA_URL = "http://rosettacode.org"
+
 
 class CodeEntry(object):
     """Code information."""
@@ -127,6 +133,46 @@ class RosettaEntry(object):
     def post_code(self, code_entry):
         """Post code_entry to RosettaCode.org."""
         pass
+
+
+class RosettaCode(object):
+    """Get information from RosettaCode.org"""
+
+    @staticmethod
+    def extract_edit_section_url(tree):
+        """Given an lxml tree of a RosettaCode page, return the edit url."""
+        url_xpath = '//*[@id="Rust"]/preceding-sibling::span/a/@href'
+        url_list = tree.xpath(url_xpath)
+        if url_list:
+            # xpath returns a list
+            edit_section_url = url_list[0]
+            return urllib.parse.urljoin(ROSETTA_URL, edit_section_url)
+        else:
+            return None
+
+    @staticmethod
+    def extract_markup(tree):
+        """Given an lxml etree of an RosettaCode edit page, return the
+markup."""
+        markup_xpath = '//textarea/text()'
+        textarea_list = tree.xpath(markup_xpath)
+        if textarea_list:
+            # xpath returns a list
+            markup = textarea_list[0]
+            return markup
+        else:
+            return None
+
+    @staticmethod
+    def get_rosetta_code_markup(url):
+        """Given a RosettaCode.org url, return the Wikimedia markup for that
+page."""
+        rosetta_request = requests.get(url)
+        rosetta_tree = lxml.html.fromstring(rosetta_request.text)
+        edit_url = RosettaCode.extract_edit_section_url(rosetta_tree)
+        markup_request = requests.get(edit_url)
+        markup_tree = lxml.html.fromstring(markup_request.text)
+        return RosettaCode.extract_markup(markup_tree)
 
 
 def main():
