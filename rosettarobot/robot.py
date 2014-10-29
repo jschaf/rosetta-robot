@@ -182,8 +182,11 @@ def main():
         arguments = docopt.docopt(__doc__, version='Rosetta Robot 0.1')
         source_files = arguments['<src_file>']
 
-        if arguments['upload']:
-            print("Uploading")
+        if arguments['check']:
+            print("checking")
+            for src in source_files:
+                code = CodeEntry(src)
+                print("{}: {}".format(src, code.extract_url()))
 
         elif arguments['download']:
             print("downloading")
@@ -210,12 +213,8 @@ def main():
                 code = CodeEntry(src)
                 print("\n*** {}\n{}".format(src, markup_fn(code)))
 
-        elif arguments['check']:
-            for src in source_files:
-                code = CodeEntry(src)
-                print("{}: {}".format(src, code.extract_url()))
-
-            print("checking")
+        elif arguments['upload']:
+            print("Uploading")
 
     except docopt.DocoptExit:
         print(docopt.DocoptExit)
