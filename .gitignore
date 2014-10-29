@@ -57,3 +57,5 @@ target/
 
 /.ipynb_checkpoints/
 *.ipynb
+/doctest.rs
+/output.js
