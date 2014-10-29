@@ -4,9 +4,10 @@ rosettarobot
 Upload source files to RosettaCode.org
 
 Usage:
-  rosettarobot upload <src_file>...
-  rosettarobot markup [--github|--mediawiki] <src_file>...
   rosettarobot check [--out-file=<rosetta-check.txt>] <src_file>...
+  rosettarobot download <url>
+  rosettarobot markup [--github | --mediawiki] <src_file>...
+  rosettarobot upload <src_file>...
 
 Options:
   -h --help         Show this screen.
@@ -183,6 +184,13 @@ def main():
 
         if arguments['upload']:
             print("Uploading")
+
+        elif arguments['download']:
+            print("downloading")
+            url = arguments['<url>']
+            rosetta_code_markup = RosettaCode.get_rosetta_code_markup(url)
+            print(rosetta_code_markup)
+
         elif arguments['markup']:
             markup_fn = None
 
