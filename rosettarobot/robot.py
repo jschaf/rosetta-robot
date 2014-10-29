@@ -184,7 +184,7 @@ def main():
         if arguments['upload']:
             print("Uploading")
         elif arguments['markup']:
-            markup_fn = CodeEntry.make_wiki_markup
+            markup_fn = None
 
             if arguments['--github']:
                 print("Using github flavored markdown syntax.")
@@ -192,9 +192,11 @@ def main():
 
             elif arguments['--mediawiki']:
                 print("Using mediawiki syntax.")
+                markup_fn = CodeEntry.make_wiki_markup
 
             else:
                 print("No syntax declared, using mediawiki syntax.")
+                markup_fn = CodeEntry.make_wiki_markup
 
             for src in source_files:
                 code = CodeEntry(src)
