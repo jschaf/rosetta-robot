@@ -59,3 +59,5 @@ target/
 *.ipynb
 /doctest.rs
 /output.js
+/Gemfile.lock
+/_site/
