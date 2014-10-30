@@ -2,3 +2,11 @@
 ---
 
 Hello, World!
+<ul>
+  
+  {% for file in site.data.rust_files %} 
+    <li><a href="">{{ file }}</a></li>
+    <pre>{% include_relative {{ file }} %}</pre>
+  {% endfor %}
+
+</ul>
