@@ -24,6 +24,7 @@ import json
 import jsonpath_rw as jsonpath
 import re
 import subprocess
+import sys
 import tempfile
 
 import requests
@@ -136,6 +137,10 @@ class RosettaEntry(object):
         pass
 
 
+class RosettaWebsiteException(Exception):
+    pass
+
+
 class RosettaCode(object):
     """Get information from RosettaCode.org"""
 
@@ -171,6 +176,8 @@ page."""
         rosetta_request = requests.get(url)
         rosetta_tree = lxml.html.fromstring(rosetta_request.text)
         edit_url = RosettaCode.extract_edit_section_url(rosetta_tree)
+        if edit_url is None:
+            raise RosettaWebsiteException("No Rust entry for {}".format(url))
         markup_request = requests.get(edit_url)
         markup_tree = lxml.html.fromstring(markup_request.text)
         return RosettaCode.extract_markup(markup_tree)
@@ -191,8 +198,12 @@ def main():
         elif arguments['download']:
             print("downloading")
             url = arguments['<url>']
-            rosetta_code_markup = RosettaCode.get_rosetta_code_markup(url)
-            print(rosetta_code_markup)
+            try:
+                rosetta_code_markup = RosettaCode.get_rosetta_code_markup(url)
+                print(rosetta_code_markup)
+            except RosettaWebsiteException as err:
+                print("Error: {}".format(err))
+                sys.exit(1)
 
         elif arguments['markup']:
             markup_fn = None
