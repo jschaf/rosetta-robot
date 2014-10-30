@@ -14,7 +14,7 @@ fn main() {
 
     for (idx, h) in hamming.enumerate().take(1_000_000) {
         match idx + 1 {
-            1..20 => print!("{} ", h.to_biguint().unwrap()),
+            1...20 => print!("{} ", h.to_biguint().unwrap()),
             i @ 1691 | i @ 1000000 => println!("\n{}th number: {}", i, h.to_biguint().unwrap()),
             _ =>  continue
         }
@@ -23,13 +23,22 @@ fn main() {
 //representing a Hamming number as a BigUint
 impl HammingNumber for BigUint {
     // returns the multipliers 2, 3 and 5 in the representation for the HammingNumber
-    fn multipliers()-> (BigUint, BigUint, BigUint) {
+    fn multipliers() -> (BigUint, BigUint, BigUint) {
         (2u.to_biguint().unwrap(),
         3u.to_biguint().unwrap(),
         5u.to_biguint().unwrap())
     }
 }
 
+// not used by the rest of code but fomally correct if
+// one wanted to use uints as representation for Hamming Numbers
+// introduced as a workaround for https://github.com/Hoverbear/rust-rosetta/issues/276
+// can be removed when upstream issue with rustc is fixed
+impl HammingNumber for uint {
+    // returns the multipliers 2, 3 and 5 in the representation for the HammingNumber
+    fn multipliers() -> (uint, uint, uint) { (2u, 3, 5) }
+}
+    
 /// representation of a Hamming number
 /// allows to abstract on how the hamming number is stored
 /// i.e. as BigUint directly or just as the powers of 2, 3 and 5 used to build it
@@ -135,6 +144,7 @@ fn hamming_iter() {
     assert!(hamming.nth(19).unwrap().to_biguint() == 36u.to_biguint());
 }
 
+#[ignore] // Please run this if you modify the file.  It is too slow to run normally.
 #[test]
 fn hamming_iter_1million() {
     let mut hamming = Hamming::<BigUint>::new(128);

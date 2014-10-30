@@ -3,8 +3,8 @@
 #![feature(macro_rules)]
 use std::iter::range_step;
 
-static MSG :&'static str = "a Top Secret secret";
-static KEY: &'static str = "this is my secret key";
+const MSG :&'static str = "a Top Secret secret";
+const KEY: &'static str = "this is my secret key";
 
 #[cfg(not(test))]
 fn main () {
@@ -89,7 +89,7 @@ impl Isaac {
     {
         let mut a_v = [0x9e3779b9u32, ..8];
 
-        for i in range(0u, 4) {
+        for _ in range(0u, 4) {
             // scramble it
             mix_v!(a_v);
         }
@@ -155,7 +155,7 @@ impl Isaac {
 #[cfg(test)]
 mod test {
     use super::{Isaac, MSG, KEY};
-    static encripted: [u8,..19] = [0x1C, 0x06, 0x36, 0x19, 0x0B, 0x12,
+    const ENCRIPTED: [u8,..19] = [0x1C, 0x06, 0x36, 0x19, 0x0B, 0x12,
         0x60, 0x23, 0x3B, 0x35, 0x12, 0x5F, 0x1E, 0x1D, 0x0E, 0x2F,
         0x4C, 0x54, 0x22];
 
@@ -165,7 +165,7 @@ mod test {
         isaac.seed(KEY, true);
         let encr = isaac.vernam(MSG.as_bytes());
 
-        for (a, b) in encr.iter().zip(encripted.iter()) {
+        for (a, b) in encr.iter().zip(ENCRIPTED.iter()) {
             assert_eq!(a, b);
         }
     }
@@ -176,7 +176,7 @@ mod test {
 
         let mut isaac = Isaac::new();
         isaac.seed(KEY, true);
-        let decr = isaac.vernam(encripted.as_slice());
+        let decr = isaac.vernam(ENCRIPTED.as_slice());
 
         for (&a, b) in decr.iter().zip(expected.bytes()) {
             assert_eq!(a, b);
