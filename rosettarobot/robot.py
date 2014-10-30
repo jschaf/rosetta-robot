@@ -7,7 +7,7 @@ Usage:
   rosettarobot check [--out-file=<rosetta-check.txt>] <src_file>...
   rosettarobot download <url>
   rosettarobot markup [--github | --mediawiki] <src_file>...
-  rosettarobot upload <src_file>...
+  rosettarobot submit <src_file>...
 
 Options:
   -h --help         Show this screen.
@@ -224,7 +224,7 @@ def main():
                 code = CodeEntry(src)
                 print("\n*** {}\n{}".format(src, markup_fn(code)))
 
-        elif arguments['upload']:
+        elif arguments['submit']:
             print("Uploading")
 
     except docopt.DocoptExit:
