@@ -1,5 +1,5 @@
 // http://rosettacode.org/wiki/Run-length_encoding
-static INPUT: &'static str = "WWWWWWWWWWWWBWWWWWWWWWWWWBBBWWWWWWWWWWWWWWWWWWWWWWWWBWWWWWWWWWWWWWW";
+const INPUT: &'static str = "WWWWWWWWWWWWBWWWWWWWWWWWWBBBWWWWWWWWWWWWWWWWWWWWWWWWBWWWWWWWWWWWWWW";
 
 // Needed so look-and-say_sequence compiles cleanly, because it
 // uses this code as a library
@@ -24,13 +24,13 @@ pub fn encode(value: &str) -> String {
         if cur == Some(chr) { count += 1 }
         else {
                 ret.push_str(count.to_string().as_slice());
-                ret.push_char(cur.unwrap());
+                ret.push(cur.unwrap());
                 count=1u;
                 cur=Some(chr);
         }
     }
     ret.push_str(count.to_string().as_slice());
-    ret.push_char(cur.unwrap());
+    ret.push(cur.unwrap());
     ret
 }
 
